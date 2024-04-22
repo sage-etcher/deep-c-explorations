@@ -1,0 +1,89 @@
+
+# removed stuff unnecessary for my testing
+
+main.out:     file format elf64-x86-64
+Disassembly of section .text:
+0000000000001180 <main>:
+    1180:   55                      push   %rbp                 # function header
+    1181:   48 89 e5                mov    %rsp,%rbp
+    1184:   48 83 ec 10             sub    $0x10,%rsp
+    1188:   c7 45 fc 00 00 00 00    movl   $0x0,-0x4(%rbp)
+    118f:   e8 1c 00 00 00          call   11b0 <heap_test>     # heap_test()
+    1194:   e8 47 00 00 00          call   11e0 <stack_test>    # stack_test()
+    1199:   e8 92 00 00 00          call   1230 <literal_test>  # literal_test()
+    119e:   31 c0                   xor    %eax,%eax            # return 0
+    11a0:   48 83 c4 10             add    $0x10,%rsp
+    11a4:   5d                      pop    %rbp
+    11a5:   c3                      ret
+
+00000000000011b0 <heap_test>:
+    11b0:   55                      push   %rbp                 # function header
+    11b1:   48 89 e5                mov    %rsp,%rbp
+    11b4:   48 83 ec 10             sub    $0x10,%rsp
+    11b8:   48 8d 3d 45 0e 00 00    lea    0xe45(%rip),%rdi     # char *str_mutable = str_dup(LITERAL 0x2004)
+    11bf:   e8 8c 00 00 00          call   1250 <str_dup>
+    11c4:   48 89 45 f8             mov    %rax,-0x8(%rbp)
+    11c8:   48 8b 45 f8             mov    -0x8(%rbp),%rax      # str_mutable[0] = 'W'
+    11cc:   c6 00 57                movb   $0x57,(%rax)
+    11cf:   48 8b 7d f8             mov    -0x8(%rbp),%rdi      # free (str_mutable)
+    11d3:   e8 58 fe ff ff          call   1030 <free@plt>
+    11d8:   48 83 c4 10             add    $0x10,%rsp           # return
+    11dc:   5d                      pop    %rbp
+    11dd:   c3                      ret
+
+00000000000011e0 <stack_test>:
+    11e0:   55                      push   %rbp                 # function header
+    11e1:   48 89 e5                mov    %rsp,%rbp
+    11e4:   48 83 ec 10             sub    $0x10,%rsp
+    11e8:   64 48 8b 04 25 28 00    mov    %fs:0x28,%rax        # char str_mutable[] = "string"
+    11ef:   00 00 
+    11f1:   48 89 45 f8             mov    %rax,-0x8(%rbp)
+    11f5:   c7 45 f3 69 6e 67 00    movl   $0x676e69,-0xd(%rbp)
+    11fc:   c7 45 f0 73 74 72 69    movl   $0x69727473,-0x10(%rbp)
+    1203:   c6 45 f0 57             movb   $0x57,-0x10(%rbp)
+    1207:   64 48 8b 04 25 28 00    mov    %fs:0x28,%rax        # str_mutable[0] = 'W'
+    120e:   00 00 
+    1210:   48 8b 4d f8             mov    -0x8(%rbp),%rcx
+    1214:   48 39 c8                cmp    %rcx,%rax
+    1217:   0f 85 06 00 00 00       jne    1223 <stack_test+0x43>
+    121d:   48 83 c4 10             add    $0x10,%rsp           # return
+    1221:   5d                      pop    %rbp
+    1222:   c3                      ret
+
+0000000000001230 <literal_test>:
+    1230:   55                      push   %rbp                 # function header
+    1231:   48 89 e5                mov    %rsp,%rbp
+    1234:   48 8d 05 c9 0d 00 00    lea    0xdc9(%rip),%rax     # char *str_mutable = LITERAL 0x2004
+    123b:   48 89 45 f8             mov    %rax,-0x8(%rbp)
+    123f:   48 8b 45 f8             mov    -0x8(%rbp),%rax      # str_mutable[0] = 'W'
+    1243:   c6 00 57                movb   $0x57,(%rax)
+    1246:   5d                      pop    %rbp                 # return
+    1247:   c3                      ret
+
+0000000000001250 <str_dup>:
+    1250:   55                      push   %rbp                 # function header
+    1251:   48 89 e5                mov    %rsp,%rbp
+    1254:   48 83 ec 10             sub    $0x10,%rsp
+    1258:   48 89 7d f8             mov    %rdi,-0x8(%rbp)      # const char src
+    125c:   48 8b 7d f8             mov    -0x8(%rbp),%rdi      # %rax = strlen(src)
+    1260:   e8 eb fd ff ff          call   1050 <strlen@plt>
+    1265:   48 89 c7                mov    %rax,%rdi
+    1268:   48 83 c7 01             add    $0x1,%rdi            # %rax += 1
+    126c:   e8 ff fd ff ff          call   1070 <malloc@plt>    # char *dest = malloc(%rax)
+    1271:   48 89 45 f0             mov    %rax,-0x10(%rbp)
+    1275:   48 8b 7d f0             mov    -0x10(%rbp),%rdi     # strcpy(dest, src)
+    1279:   48 8b 75 f8             mov    -0x8(%rbp),%rsi
+    127d:   e8 be fd ff ff          call   1040 <strcpy@plt>
+    1282:   48 8b 45 f0             mov    -0x10(%rbp),%rax     # return dest
+    1286:   48 83 c4 10             add    $0x10,%rsp
+    128a:   5d                      pop    %rbp
+    128b:   c3                      ret
+
+Disassembly of section .rodata:
+
+0000000000002000 <_IO_stdin_used>:
+    2000:   01 00 02 00             # data header
+    2004:   73 74 72 69 6e 67 00
+            s  t  r  i  n  g  \0
+    201b:   ...
+
